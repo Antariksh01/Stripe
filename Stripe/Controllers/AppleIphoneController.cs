@@ -13,9 +13,17 @@ namespace Stripe.Controllers
         // GET: AppleIphone
         public ActionResult Index()
         {
-            string stripePublishableKey = ConfigurationManager.AppSettings["stripePublishableKey"];
-            var model = new AppleIphoneViewModels() { StripePublishableKey = stripePublishableKey };
-            return View(model);
+            if (Session["UserID"] != null)
+            {
+                string stripePublishableKey = ConfigurationManager.AppSettings["stripePublishableKey"];
+                var model = new AppleIphoneViewModels() { StripePublishableKey = stripePublishableKey };
+                return View(model);
+            }
+            else {
+
+                return RedirectToAction("UserAccount", "Login");
+
+            }
         }
 
 
