@@ -5,6 +5,8 @@ using Microsoft.Owin;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.Google;
 using Owin;
+using Stripe.Database;
+using Stripe.ViewModels;
 using Stripe.Models;
 
 namespace Stripe

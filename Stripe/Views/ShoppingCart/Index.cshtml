@@ -1,0 +1,29 @@
+﻿@model Stripe.ViewModels.ShoppingCartViewModel
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>You have an Iphone in your cart. Please proceed to checkout by clicking the below button.</h2>
+
+<div>
+    <div>   
+        <div>       
+            @using (Html.BeginForm("Purchase", "ShoppingCart", FormMethod.Post)) {
+
+                @Html.AntiForgeryToken()
+                <script src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+                        data-key="@Model.StripePublishableKey"
+                        data-amount="60000"
+                        data-name="Iphone"
+                        data-description="Gadget"
+                        data-image="/Images/iphone.png"
+                        data-locale="auto">
+                </script>
+            }
+        </div>
+
+     </div>
+</div>
+
+@Html.ActionLink("Logout","Logout","UserAccount")

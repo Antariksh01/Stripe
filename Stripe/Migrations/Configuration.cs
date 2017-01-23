@@ -5,7 +5,7 @@ namespace Stripe.Migrations
     using System.Data.Entity.Migrations;
     using System.Linq;
 
-    internal sealed class Configuration : DbMigrationsConfiguration<Stripe.Models.UserAccountDbContext>
+    internal sealed class Configuration : DbMigrationsConfiguration<Stripe.Database.UserAccountDbContext>
     {
         public Configuration()
         {
@@ -13,7 +13,7 @@ namespace Stripe.Migrations
             ContextKey = "Stripe.Models.UserAccountDbContext";
         }
 
-        protected override void Seed(Stripe.Models.UserAccountDbContext context)
+        protected override void Seed(Stripe.Database.UserAccountDbContext context)
         {
             //  This method will be called after migrating to the latest version.
 

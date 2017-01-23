@@ -7,6 +7,12 @@ using System.Web.Optimization;
 using System.Web.Routing;
 using Stripe;
 using System.Configuration;
+using Autofac;
+using Autofac.Integration;
+using Stripe.Interfaces;
+using Stripe.Service;
+using Autofac.Integration.Mvc;
+using System.Reflection;
 
 namespace Stripe
 {
@@ -18,16 +24,16 @@ namespace Stripe
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+            ContainerBuilder builder = new ContainerBuilder();
+            builder.RegisterType<UserService>().As<IUserService>();
+            builder.RegisterType<StripePaymentService>().As<IPaymentService>();
+            builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly()).Where(t => t.Name.EndsWith("Controller"));
+            IContainer container = builder.Build();
+
+            DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
 
             StripeConfiguration.SetApiKey(ConfigurationManager.AppSettings["stripeSecretKey"]);
         }
 
-        //protected void Application_BeginRequest()
-        //{
-            
-        //    Response.Cache.SetCacheability(HttpCacheability.NoCache);
-        //    Response.Cache.SetExpires(DateTime.UtcNow.AddHours(-1));
-        //    Response.Cache.SetNoStore();
-        //}
     }
 }

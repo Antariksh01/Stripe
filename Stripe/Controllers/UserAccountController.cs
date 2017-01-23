@@ -3,12 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using Stripe.Models;
+using Stripe.ViewModels;
+using Stripe.Interfaces;
 
 namespace Stripe.Controllers
 {
     public class UserAccountController : Controller
     {
+
+        public UserAccountController(IUserService _userService)
+        {
+            _UserService = _userService;
+        }
+
+        IUserService _UserService;
+
         //Register
         public ActionResult Register() {
 
@@ -21,12 +30,7 @@ namespace Stripe.Controllers
         public ActionResult Register(UserAccount account) {
             if (ModelState.IsValid) {
 
-                using (UserAccountDbContext db = new UserAccountDbContext()) {
-
-                    db.userAccount.Add(account);
-                    db.SaveChanges();
-
-                }
+                _UserService.CreateUser(account.FirstName, account.LastName, account.UserName, account.EmailAddress, account.Password, account.ConfirmPassword);
                 ModelState.Clear();
             }
             return RedirectToAction("Login");
@@ -43,26 +47,22 @@ namespace Stripe.Controllers
         [HttpPost]
         public ActionResult Login(UserAccount user) {
 
-            using (UserAccountDbContext db = new UserAccountDbContext()) {
-                var usr = db.userAccount.SingleOrDefault(u => u.UserName == user.UserName && u.Password == user.Password);
-                if (usr != null)
-                {
-                    Session["UserID"] = usr.UserID.ToString();
-                    Session["UserName"] = usr.UserName.ToString();
-                    return RedirectToAction("Index", "AppleIphone");
-                    
-                }
+            var usr=_UserService.GetUser(user.UserName, user.Password);
+            if (usr != null)
+            {
+                Session["UserID"] = usr.UserID.ToString();
+                Session["UserName"] = usr.UserName.ToString();
+                return RedirectToAction("Index", "ShoppingCart");
 
-                else {
+            }
+            else
+            {
 
-                    ModelState.AddModelError("", "User Name or Password is wrong");
-
-                }
+                      ModelState.AddModelError("", "User Name or Password is wrong");
 
              }
 
-            return View();
-
+                return View();
         }
 
         public ActionResult Logout() {
@@ -70,14 +70,6 @@ namespace Stripe.Controllers
             Session.Abandon();
             Session.Clear();
             Session.RemoveAll();
-
-            //Below code can be use to clear the cookies.
-            //Place the code in Global.asax file
-
-            //System.Web.Security.FormsAuthentication.SignOut();
-            //Response.Cache.SetCacheability(HttpCacheability.NoCache);
-            //Response.Cache.SetExpires(DateTime.UtcNow.AddHours(-1));
-            //Response.Cache.SetNoStore();
             return RedirectToAction("Login");
 
         }
